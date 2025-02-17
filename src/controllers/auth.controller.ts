@@ -210,7 +210,7 @@ export class AuthController {
           status: "error",
           token: "",
           message:
-          "The email is have no password, Please choose antoher account.",
+          "The email is have no password, Please choose another account.",
         });
       }
 

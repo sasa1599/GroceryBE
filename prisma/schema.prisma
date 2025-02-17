@@ -60,15 +60,15 @@ model User {
   last_name  String?
   date_ob    DateTime?
   avatar     String?
-  google_id  Int?
+  google_id  String?
   role       Role
   verified   Boolean   @default(false)
   created_at DateTime  @default(now())
   updated_at DateTime  @default(now())
   verify_token String? 
   password_reset_token String? 
+  referral_code     String
 
-  referralsSent     Referral[] @relation("ReferrerRelation")
   referralsReceived Referral[] @relation("ReferredRelation")
   Store             Store?
   discounts         Discount[]
@@ -104,7 +104,6 @@ model Referral {
   referral_code String @unique
   reward_id     Int?
 
-  referrer User     @relation("ReferrerRelation", fields: [referrer_id], references: [user_id])
   referred User?    @relation("ReferredRelation", fields: [referred_id], references: [user_id])
   reward   Voucher? @relation(fields: [reward_id], references: [voucher_id])
 }
