@@ -256,3 +256,16 @@ model CartItem {
   user        User     @relation(fields: [user_id], references: [user_id])
   product     Product  @relation(fields: [product_id], references: [product_id])
 }
+
+model Province {
+  id          Int @id
+  name        String
+  City        City[]
+}
+
+model City {
+  id          Int @id
+  name        String
+  province_id Int
+  province    Province @relation(fields: [province_id], references: [id])
+}
