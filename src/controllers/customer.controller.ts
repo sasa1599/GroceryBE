@@ -26,6 +26,8 @@ export class CustomerController {
           last_name: true,
           phone: true,
           role: true,
+          is_google: true,
+          referral_code: true,
           verified: true,
           created_at: true,
           updated_at: true,

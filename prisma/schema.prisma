@@ -60,7 +60,7 @@ model User {
   last_name  String?
   date_ob    DateTime?
   avatar     String?
-  google_id  String?
+  is_google  Boolean  @default(false)
   role       Role
   verified   Boolean   @default(false)
   created_at DateTime  @default(now())
@@ -79,22 +79,22 @@ model User {
 }
 
 model Address {
-  address_id  Int      @id @default(autoincrement())
-  user_id     Int
-  address_name     String   @db.Text
-  address     String   @db.Text
-  subdistrict String?
-  city        String
-  city_id     String
-  province    String
-  province_id String
-  postcode    String?
-  latitude    Float
-  longitude   Float
-  is_primary  Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
-  user        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  address_id   Int      @id @default(autoincrement())
+  user_id      Int
+  address_name String   @db.Text
+  address      String   @db.Text
+  subdistrict  String?
+  city         String
+  city_id      String
+  province     String
+  province_id  String
+  postcode     String?
+  latitude     Float
+  longitude    Float
+  is_primary   Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  user         User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model Referral {
@@ -126,6 +126,7 @@ model Discount {
   discount_id    Int       @id @default(autoincrement())
   store_id       Int?
   product_id     Int?
+  thumbnail      String?
   discount_code  String    @unique
   discount_type  Type
   discount_value Int
