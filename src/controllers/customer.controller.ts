@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { hashPass } from "../helpers/hashpassword";
+import { tokenService } from "../helpers/createToken";
+import { sendVerificationEmail } from "../services/mailer";
 
 const prisma = new PrismaClient();
 
@@ -53,7 +55,7 @@ export class CustomerController {
       if (!req.user) {
         return res.status(401).json({ error: "Unauthorized" });
       }
-      
+
       const {
         password,
         confirmPassword
@@ -92,7 +94,7 @@ export class CustomerController {
       if (!req.user) {
         return res.status(401).json({ error: "Unauthorized" });
       }
-      
+
       const {
         firstName,
         lastName,
@@ -112,9 +114,23 @@ export class CustomerController {
         await prisma.user.update({
           where: { user_id: req.user.id },
           data: {
-            verified: false
+            verified: false,
+            verify_token: null
           }
         })
+
+        const token = tokenService.createEmailRegisterToken({
+          id: req.user.id,
+          role: "customer",
+          email,
+        });
+
+        await prisma.user.update({
+          where: { user_id: req.user.id },
+          data: { verify_token: token }
+        })
+
+        await sendVerificationEmail(email, token);
       }
 
       const updateCust = await prisma.user.update({
@@ -147,7 +163,7 @@ export class CustomerController {
       if (!req.user) {
         return res.status(401).json({ error: "Unauthorized" });
       }
-      
+
       const {
         avatar,
       } = req.body;
