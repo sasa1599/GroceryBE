@@ -17,20 +17,25 @@ export class AuthController {
 
       if (!email) return res.status(400).json({ error: "Email tidak ditemukan" });
 
-      let user = await prisma.user.findUnique({
+      let users = await prisma.user.upsert({
         where: { email },
+        update: {}, // Jika user sudah ada, biarkan tetap sama
+        create: {
+          email: email,
+          role: "customer",
+          username: name,
+          avatar: picture,
+          verified: true,
+          referral_code: generateReferralCode(8),
+          first_name: name.split(" ")[0],
+          last_name: name.split(" ")[1] || "",
+          is_google: true,
+        },
       });
 
-      if (!user) {
-        // Buat user baru jika belum ada
-        user = await prisma.user.create({
-          data: { email, role: "customer", username: name, avatar: picture, verified: true, referral_code: generateReferralCode(8), first_name: name.split(" ")[0], last_name: name.split(" ")[1], is_google: true },
-        });
-      }
-
       const token = tokenService.createLoginToken({
-        id: user.user_id,
-        role: user.role
+        id: users.user_id,
+        role: users.role
       });
 
       // await sendVerificationEmail(email, token);
@@ -40,7 +45,7 @@ export class AuthController {
         token: token,
         message:
           "Login google successfully.",
-        user: user,
+        user: users,
       });
     } catch (error) {
       console.error(error);
@@ -67,7 +72,7 @@ export class AuthController {
           email,
           role: "customer",
           verified: false,
-          referral_code: generateReferralCode(8)
+          referral_code: null
         },
       });
 

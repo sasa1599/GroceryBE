@@ -110,6 +110,8 @@ export class CustomerController {
         }
       });
 
+      let updateCust = null;
+
       if (!customer) {
         await prisma.user.update({
           where: { user_id: req.user.id },
@@ -131,20 +133,19 @@ export class CustomerController {
         })
 
         await sendVerificationEmail(email, token);
-      }
-
-      const updateCust = await prisma.user.update({
-        where: { user_id: req.user.id },
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          phone
+      } else {
+        updateCust = await prisma.user.update({
+          where: { user_id: req.user.id },
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            phone
+          }
+        })
+        if (!updateCust) {
+          return res.status(404).json({ error: "Customer not found" });
         }
-      })
-
-      if (!updateCust) {
-        return res.status(404).json({ error: "Customer not found" });
       }
 
       return res.status(200).json({
