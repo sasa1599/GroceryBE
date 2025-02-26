@@ -128,31 +128,32 @@ export class StoreController {
         user_id,
       } = req.body;
 
-      if (store_name) {
-        const existingStore = await prisma.store.findFirst({
-          where: {
-            store_name,
-            store_id: { not: parseInt(store_id) },
-          },
-        });
+      // if (store_name) {
+      //   const existingStore = await prisma.store.findFirst({
+      //     where: {
+      //       store_name
+      //     },
+      //   });
 
-        if (existingStore) {
-          throw new Error("Store name already exists");
-        }
-      }
+      //   if (existingStore) {
+      //     throw new Error("Store name already exists");
+      //   }
+      // }
 
-      if (user_id) {
-        const existingUserStore = await prisma.store.findFirst({
-          where: {
-            user_id,
-            store_id: { not: parseInt(store_id) },
-          },
-        });
+      // if (user_id) {
+      //   const existingUserStore = await prisma.store.findFirst({
+      //     where: {
+      //       user_id,
+      //       store_id: { not: parseInt(store_id) },
+      //     },
+      //   });
 
-        if (existingUserStore) {
-          throw new Error("User already has a store");
-        }
-      }
+      //   if (existingUserStore) {
+      //     throw new Error("User already has a store");
+      //   }
+      // }
+
+      // User_id kenapa harus unique ?
 
       const store = await prisma.store.update({
         where: { store_id: parseInt(store_id) },
@@ -171,6 +172,7 @@ export class StoreController {
 
       return res.status(200).json(store);
     } catch (error: unknown) {
+      console.log(error);
       const message =
         error instanceof Error ? error.message : "Unknown error occurred";
       return res.status(500).json({ error: message });
